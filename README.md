@@ -117,7 +117,7 @@ Googleドライブ上に保管した小説を「TxtMiru on the Web」で閲覧�
 
 5. Bookmarkletのコピー
 
-	[https://github.com/gearsns/TxtMiruOnTheWebServer/source/Bookmarklet/narou.js](https://github.com/gearsns/TxtMiruOnTheWebServer/source/Bookmarklet/narou.js)
+	[TxtMiruOnTheWebServer/source/Bookmarklet/narou.js](https://raw.githubusercontent.com/gearsns/TxtMiruOnTheWebServer/refs/heads/main/source/Bookmarklet/narou.js)
 	からnarou.jsをダウンロード
 
 	---
