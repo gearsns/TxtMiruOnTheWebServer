@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    #googleDriveURL, #bookmarklet {
+        box-sizing: border-box;
+        width: calc(100% - 1rem);
+        height: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        background-color: #f6f8fa;
+        padding: 0.5rem;
+        margin: 0.5rem;
+    }
+
+    button {
+        background-color: #1f883d;
+        border-color: transparent;
+        color: white;
+        border-radius: 0.375rem;
+        padding: 0.2rem;
+    }
+
+    .content {
+        border: 0.05rem solid;
+        border-color: lightgray;
+        border-radius: 0.375rem;
+        padding: 0.2rem;
+        margin: 0.2rem;
+    }
+</style>
+<title>小説お気に入り管理 GoogleDrive - bookmarklet</title>
+<h1>小説お気に入り管理 GoogleDrive - bookmarklet</h1>
+<a href="https://gearsns.github.io/TxtMiruOnTheWeb/" target="_blank">TxtMiru on the Web - 縦書き小説ビューア -</a>
+<div class="content">
+    <h4>TxtMiru WebサーバーのURL</h4>
+    <button id="copyGoogleDriveURL">Copy</button>
+    <div id="googleDriveURL"><?!= ScriptApp.getService().getUrl() ?></div>
+    <script>
+        const googleDriveURL = document.getElementById("googleDriveURL");
+        document.getElementById("copyGoogleDriveURL").addEventListener("click", _ => {
+            navigator.clipboard.writeText(googleDriveURL.textContent);
+            alert("URLをコピーしました")
+        });
+    </script>
+</div>
+<div class="content">
+    <h4>bookmarklet</h4>
+    <button id="copyBookmarklet">Copy</button>
+    <div id="bookmarklet"></div>
+    <script>
+        const bookmarklet = document.getElementById("bookmarklet");
+        bookmarklet.textContent = `javascript:(function(d,s,g){g='<?!= ScriptApp.getService().getUrl() ?>';window.defNovelListUrl=g;s=d.createElement('script');s.src=g+'?url=bmlet/narou.js';d.body.appendChild(s);})(document)`;
+        document.getElementById("copyBookmarklet").addEventListener("click", _ => {
+            navigator.clipboard.writeText(bookmarklet.textContent);
+            alert("bookmarkletをコピーしました")
+        });
+    </script>
+</div>
+<div class="content">
+    <h4>登録方法</h4>
+    <ol>
+        <li>Copyボタン押下でクリップボードにbookmarkletをコピー</li>
+        <li>ブックマークの追加</li>
+        <li>ブックマークの名前の指定
+            <div>小説用 bookmarkletとわかる名前を指定</div>
+        </li>
+        <li>ブックマークの編集</li>
+        <li>URL欄の削除</li>
+        <li>コピーしておいたbookmarkletを貼り付け</li>
+    </ol>
+
+    <h4>bookmarkletの使い方</h4>
+    <ol>
+        <li>小説サイトに移動
+            <div>https://ncode.syosetu.com 又は、 https://novel18.syosetu.com</div>
+        </li>
+        <li>登録したブックマークを選択</li>
+        <li>お気に入り管理画面が表示される</li>
+    </ol>
+
+    <h4>お気に入り管理の使い方</h4>
+    <ol>
+        <li>小説の追加
+            <div>追加ボタンを押下</div>
+            <ul>
+                <li>Nコードを入力 ※デフォルトで開いている小説ページのNコードが設定されます。</li>
+                <li>登録ボタンを押下でお気に入り管理に追加されます。</li>
+            </ul>
+        </li>
+        <li>小説の削除
+            <ul>
+                <li>削除したい小説の左にあるチェックボックス選択</li>
+                <li>削除ボタンを押下で選択した小説がお気に入り管理から削除されます。</li>
+            </ul>
+        </li>
+        <li>お気に入りの再取得
+            <div>お気に入り情報が古い場合に再取得ボタンを押下して最新にします。</div>
+        </li>
+        <li>小説の更新状況を確認
+            <ul>
+                <li>小説の更新を確認ボタンを押下</li>
+                <li>前回取得から最大5件でページ数が増えているかを確認します。
+                    <div>更新があれば一番左に総ページ数が表示されます。</div>
+                </li>
+            </ul>
+        </li>
+        <li>GoogleDriveに保存
+            <ul>
+                <li>選択した小説をGoogleDriveに保存ボタンを押下で小説が保存されます。</li>
+            </ul>
+        </li>
+    </ol>
+</div>
+
+</html>
