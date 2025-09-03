@@ -309,7 +309,17 @@
             const item = toc.subtitles[i + total];
             const url = `${NovelListNarouTopUrl}${item.href}`;
             const html = await fetch(url, { credentials: 'include' }).then(res => res.text());
-            updateData.push({ url: url, content: html });
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const ellist = [`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>${escapeHtml(doc.title)}</title></head>`];
+            if (item.chapter) {
+                ellist.push(`<h3 class="p-novel__subtitle-chapter">${escapeHtml(item.chapter)}</h3>`);
+            }
+            ellist.push(`<h3 class="p-novel__subtitle-episode">${escapeHtml(item.subtitle)}</h3>`);
+            for(const el of doc.getElementsByClassName("p-novel__body")) {
+                ellist.push(el.outerHTML);
+            }
+            updateData.push({ url: url, content: ellist.join("") });
         }
         return updateData;
     }
