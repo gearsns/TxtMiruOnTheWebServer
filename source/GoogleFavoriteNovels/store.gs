@@ -65,6 +65,83 @@ const createWebSiteFolders = _ => {
   }
 }
 
+const getBookmarklets = _ => {
+  const bookmarklets = [];
+  if (!webSiteItems)
+  {
+    const websiteSheet = getSheet("website");
+    if (websiteSheet)
+    {
+      webSiteItems = websiteSheet.getDataRange().getValues();
+    }
+  }
+  if (webSiteItems)
+  {
+    const items = webSiteItems.slice();
+    const headers = items.shift();
+    const indexName = headers.indexOf("name");
+    const indexBaseFolder = headers.indexOf("baseFolder");
+    for (let item of items)
+    {
+      if (item[indexName] === "Bookmarklet")
+      {
+        const folder = getDeepFolder(getCurrentFolder(), item[indexBaseFolder].split(/[\/\\]/).filter(Boolean));
+        const files = folder.getFiles();
+        while (files.hasNext()) {
+          const file = files.next();
+          bookmarklets.push(file.getName());
+        }
+      }
+    }
+  }
+  return bookmarklets;
+
+}
+
+const getTocFilesInFolder = (folder) => {
+  const files = folder.getFilesByName("toc.yaml");
+  if (files.hasNext())
+  {
+    return [files.next()];
+  }
+  let toc_files = [];
+  const folders = folder.getFolders();
+  while (folders.hasNext()) {
+    const folder = folders.next();
+    toc_files.push(...getTocFilesInFolder(folder));
+  }
+  return toc_files;
+}
+
+const getTocFiles = _ => {
+  let files = [];
+  if (!webSiteItems)
+  {
+    const websiteSheet = getSheet("website");
+    if (websiteSheet)
+    {
+      webSiteItems = websiteSheet.getDataRange().getValues();
+    }
+  }
+  if (webSiteItems)
+  {
+    const items = webSiteItems.slice();
+    const headers = items.shift();
+    const indexBaseFolder = headers.indexOf("baseFolder");
+    const folderList = {};
+    for (let item of items)
+    {
+      const baseFolder = item[indexBaseFolder];
+      if (!folderList[baseFolder]){
+        folderList[baseFolder] = true;
+        const folder = getDeepFolder(getCurrentFolder(), baseFolder.split(/[\/\\]/).filter(Boolean));
+        files.push(...getTocFilesInFolder(folder));
+      }
+    }
+  }
+  return files;
+}
+
 const getStoreFileLocation = url => {
   const deepPathList = [];
   let fileName = "";
@@ -216,4 +293,39 @@ const getStoreText = (url, deepPathList, fileName) => {
     return DriveApp.getFileById(fileId).getBlob().getDataAsString("utf-8");
   }
   return null;
+}
+
+const rebuildIndex = _ => {
+  const favoriteSheet = getSheet("favorite");
+  if (favoriteSheet)
+  {
+    const favorites = favoriteSheet.getDataRange().getValues();
+    const headers = favorites.shift();
+    const indexId = headers.indexOf("id");
+    const indexUrl = headers.indexOf("url");
+    for(const file of getTocFiles()){
+      const toc = jsyaml.load(file.getBlob().getDataAsString("utf-8"));
+      const favoriteItem = {
+        "name": toc.title,
+        "author": toc.author,
+        "url": toc.toc_url,
+        "maxPage": toc.subtitles.length,
+        "source": "GoogleDrive"
+      };
+      for(const item of favorites){
+        if (item[indexUrl].replace(/\/$/, "") === toc.toc_url.replace(/\/$/, "")){
+          favoriteItem.id = item[indexId];
+          break;
+        }
+      }
+      if (favoriteItem.id)
+      {
+        updateFavorite(favoriteItem);
+      }
+      else 
+      {
+        addFavorite(favoriteItem);
+      }
+    }
+  }
 }

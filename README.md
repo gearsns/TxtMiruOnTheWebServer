@@ -161,7 +161,5 @@ toc.yamlファイル/rawフォルダをコピーします。
 
 favoriteNovelsシートに小説を追加します。
 
-id : 1から連番  
-url : https://ncode.syosetu.com/nxxxx  
-maxPage : toc.yamlやrawフォルダ内のファイル数で確認  
-source : GoogleDrive  
+デプロイしたサイトのから  
+「GoogleDriveに保管した小説データをお気に入りに反映」-「実行」

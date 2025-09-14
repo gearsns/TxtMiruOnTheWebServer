@@ -8,9 +8,14 @@ const doGet = e => {
   const url = parameter.url;
   if (!url)
   {
+    if (parameter.rebuild_index === "true") {
+      rebuildIndex();
+    }
     createWebSiteFolders();
-    return HtmlService
-      .createTemplateFromFile("index")
+    bookmarklets = getBookmarklets();
+    const templete = HtmlService.createTemplateFromFile("index");
+    templete.bookmarkletList = bookmarklets.length > 0 ? `'${bookmarklets.join("','")}'` : "";
+    return templete
       .evaluate()
       .setTitle('小説お気に入り管理 GoogleDrive - bookmarklet')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')

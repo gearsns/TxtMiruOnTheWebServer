@@ -22,6 +22,16 @@
         padding: 0.2rem;
     }
 
+    a {
+        background-color: #183df8;
+        border-color: transparent;
+        color: white;
+        border-radius: 0.375rem;
+        padding: 0.2rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+
     .content {
         border: 0.05rem solid;
         border-color: lightgray;
@@ -47,16 +57,43 @@
 </div>
 <div class="content">
     <h4>bookmarklet</h4>
+    <select id="bookmarklstSite"></select>
     <button id="copyBookmarklet">Copy</button>
     <div id="bookmarklet"></div>
     <script>
+        const bookmarkletList = [<?!= bookmarkletList ?>];
+        const bookmarklstSite = document.getElementById("bookmarklstSite");
         const bookmarklet = document.getElementById("bookmarklet");
-        bookmarklet.textContent = `javascript:(function(d,s,g){g='<?!= ScriptApp.getService().getUrl() ?>';window.defNovelListUrl=g;s=d.createElement('script');s.src=g+'?url=bmlet/narou.js';d.body.appendChild(s);})(document)`;
+        for(const s of bookmarkletList){
+          const elOption = document.createElement("option");
+          elOption.value = s;
+          elOption.textContent = s;
+          bookmarklstSite.appendChild(elOption);
+        }
+        const changeBookmarklet = t => {
+            bookmarklet.textContent = `javascript:(function(d,s,g){g='<?!= ScriptApp.getService().getUrl() ?>';window.defNovelListUrl=g;s=d.createElement('script');s.src=g+'?url=bmlet/${t}';d.body.appendChild(s);})(document)`;
+        }
+        bookmarklstSite.addEventListener("change", e => {
+          if (e.target.value.length > 0){
+            changeBookmarklet(e.target.value);
+          }
+        });
         document.getElementById("copyBookmarklet").addEventListener("click", _ => {
             navigator.clipboard.writeText(bookmarklet.textContent);
             alert("bookmarkletをコピーしました")
         });
+        if (bookmarkletList.length == 0) {
+          const elOption = document.createElement("option");
+          elOption.textContent = "bookmaletフォルダにjsファイルをアップロードしてください。";
+          bookmarklstSite.appendChild(elOption);
+        }
+        bookmarklstSite.selectedIndex = 0;
+        changeBookmarklet(bookmarklstSite.value);
     </script>
+</div>
+<div class="content">
+    <h4>GoogleDriveに保管した小説データをお気に入りに反映</h4>
+    <a href="<?!= ScriptApp.getService().getUrl() ?>?rebuild_index=true" target="_top">実行</a>
 </div>
 <div class="content">
     <h4>登録方法</h4>

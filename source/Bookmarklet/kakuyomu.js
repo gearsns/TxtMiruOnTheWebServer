@@ -1,14 +1,28 @@
 (async function () {
     let NovelListUrl = window.defNovelListUrl || "";
-    const BaseNovelListNarouTopUrl = "https://ncode.syosetu.com";
-    const BaseNovelListNarou18TopUrl = "https://novel18.syosetu.com";
-    let NovelListNarouTopUrl = BaseNovelListNarouTopUrl;
+    const BaseNovelListKakuyomuTopUrl = "https://kakuyomu.jp";
+    const BaseNovelListKakuyomu18TopUrl = "https://kakuyomu.jp";
+    let NovelListKakuyomuTopUrl = BaseNovelListKakuyomuTopUrl;
     if (!document.getElementById("NovelListStyle")) {
         const elNovelListStyle = document.createElement("style");
         elNovelListStyle.id = "NovelListStyle";
         elNovelListStyle.textContent = `
+            #NovelList {
+                writing-mode: horizontal-tb;
+            }
             #NovelList table,#NovelList button,#NovelList input {
                 margin: 2px; border: 1px solid gray; padding: 2px;
+            }
+            #NovelList input[type="checkbox"] {
+                border-radius: 0;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+            #NovelList input[type="checkbox"] {
+                width: 1rem;
+                height: 1rem;
+                all: revert;
             }
             .NovelListBox {
                 z-index: 100; position: fixed;
@@ -46,6 +60,9 @@
             }
             #NovelListInputModal, #NovelListDelteModal, #NovelListLoading {
                 display: none;
+            }
+            #NovelListNcodeInput {
+                width: 50rem;
             }
             #NovelListFavoriteError, #NovelListNcodeInputError {
                 color: red;
@@ -98,10 +115,10 @@
         const elNovelListOverlap = document.getElementById("NovelListOverlap");
         elNovelListOverlap.remove();
     }
-    if (document.location.origin === BaseNovelListNarouTopUrl
-        || document.location.origin === BaseNovelListNarou18TopUrl
+    if (document.location.origin === BaseNovelListKakuyomuTopUrl
+        || document.location.origin === BaseNovelListKakuyomu18TopUrl
     ) {
-        NovelListNarouTopUrl = document.location.origin;
+        NovelListKakuyomuTopUrl = document.location.origin;
     }
     const elNovelListOverlap = document.createElement("div");
     elNovelListOverlap.id = "NovelListOverlap";
@@ -127,14 +144,14 @@
                         (<button id="NovelListRefresh">再取得</button>)
                         <p id="NovelListFavoriteError"></p>
                         <table>
-                            <thead><tr><th><input type="checkbox" id="NovelListBulkSelect"><label for="NovelListBulkSelect">更新</label><th>ncode<th>ページ<th>総ページ数<th>タイトル<th>著者</thead>
+                            <thead><tr><th><input type="checkbox" id="NovelListBulkSelect"><label for="NovelListBulkSelect">更新</label><th>ID<th>ページ<th>総ページ数<th>タイトル<th>著者</thead>
                             <tbody id="NovelListData"></tbody>
                         </table>
                     </div>
                 </div>
                 <div id="NovelListInputModal" class="NovelListBox">
                     <div class="NovelListInnerBox">
-                        <p>ncodeを入力してください:</p>
+                        <p>ID/URL入力してください:</p>
                         <p id="NovelListNcodeInputError"></p>
                         <input type="text" id="NovelListNcodeInput" />
                         <button id="NovelListSubmitNcode">登録</button>
@@ -173,10 +190,10 @@
             return null;
         }
         NovelList = result.values.map(item => {
-            if (!item.url.startsWith(NovelListNarouTopUrl) || item.source !== "GoogleDrive") {
+            if (!item.url.startsWith(NovelListKakuyomuTopUrl) || item.source !== "GoogleDrive") {
                 return null;
             }
-            const match = item.url.match(/.*syosetu.*\/(?<ncode>n[A-Za-z0-9]+)/);
+            const match = item.url.match(/.*kakuyomu.jp\/works\/(?<ncode>[A-Za-z0-9]+)/);
             return match ? {
                 id: item.id,
                 ncode: match.groups.ncode,
@@ -195,7 +212,7 @@
             const elNovelListData = document.getElementById("NovelListData");
             elNovelListData.innerHTML = novelList.map(item =>
                 `<tr class="NovelListItem" ncode="${item.ncode}" total="${item.total}" page="${item.page}" title="${escapeHtml(item.title)}">
-                 <td><input type="checkbox" class="NovelListNcode" value="${item.ncode}" id="NovelListItem_${item.id}"><label for="NovelListItem_${item.id}"><span class="NovelListUpdateInfo"></span><label><td>${item.ncode}<td>${item.page}<td>${item.total}<td><a href='https://ncode.syosetu.com/${item.ncode}/'>${escapeHtml(item.title)}</a><td>${escapeHtml(item.author)}`
+                 <td><input type="checkbox" class="NovelListNcode" value="${item.ncode}" id="NovelListItem_${item.id}"><label for="NovelListItem_${item.id}"><span class="NovelListUpdateInfo"></span><label><td>${item.ncode}<td>${item.page}<td>${item.total}<td><a href='https://kakuyomu.jp/works/${item.ncode}/'>${escapeHtml(item.title)}</a><td>${escapeHtml(item.author)}`
             ).join("");
         }
         hideLoading();
@@ -221,37 +238,6 @@
         const element = doc.getElementsByClassName(name)[0];
         return element ? element.textContent : "";
     }
-    // subtitles取得
-    const getSubtitles = doc => {
-        const subtitles = [];
-        let chapter = "";
-        doc.querySelectorAll(".p-eplist > .p-eplist__sublist, .p-eplist > .p-eplist__chapter-title").forEach(elSublist => {
-            if (elSublist.classList.contains("p-eplist__sublist")) {
-                const item = {};
-                // サブタイトルとリンク取得
-                const elSubtitle = elSublist.querySelector(".p-eplist__subtitle");
-                if (elSubtitle) {
-                    item.subtitle = elSubtitle.textContent.trim();
-                    item.href = elSubtitle.href.replace(/https:\/\/.*\.syosetu\.com/, "");
-                    item.index = item.href.replace(/\/.*\/(.*)\//, "$1");
-                }
-                // 作成日と更新日取得
-                const elCreateDate = elSublist.querySelector(".p-eplist__update");
-                if (elCreateDate) {
-                    const elUpdateDate = elCreateDate.querySelector("span");
-                    if (elUpdateDate) {
-                        item.subdate = elUpdateDate.title.replace(/ 改稿/, "");
-                    }
-                    item.subupdate = elCreateDate.textContent.trim().split(/\n/)[0];
-                }
-                item.chapter = chapter; // 現在の章情報を追加
-                subtitles.push(item);
-            } else {
-                chapter = elSublist.textContent.trim(); // 章タイトルを更新
-            }
-        });
-        return subtitles;
-    }
     const dOMParser = new DOMParser();
     const fetchDocument = async (url) => {
         clearErrorMessage();
@@ -264,28 +250,68 @@
     }
     // TOC作成
     const createToc = async (ncode, maxPage) => {
-        const url = `${NovelListNarouTopUrl}/${ncode}`;
+        const url = `${NovelListKakuyomuTopUrl}/works/${ncode}`;
         const topDocument = await fetchDocument(url);
-        const toc = {
-            title: getTextContentByClassName(topDocument, "p-novel__title"),
-            author: getTextContentByClassName(topDocument, "p-novel__author").replace(/作者：\s*/, "").trim(),
-            toc_url: url,
-            story: getTextContentByClassName(topDocument, "p-novel__summary"),
-            subtitles: getSubtitles(topDocument)
-        };
-        // 最終ページ取得
-        const lastPageElement = topDocument.querySelector(".c-pager__item--last");
-        const lastPage = lastPageElement ? parseInt(lastPageElement.href.match(/\?p=(\d+)/)?.[1] || "1", 10) : 1;
-        // 2ページ目以降を取得
-        for (let page = 2; page <= lastPage; page++) {
-            if (toc.subtitles.length > maxPage) {
+        const html = topDocument.body.innerHTML;
+        const regexp  = /(\<script[\s\S]*?\>)([\s\S]*?)\<\/script\>/ig;
+        let m = null;
+        let script_data = null;
+        while((m = regexp.exec(html)) !== null) {
+            if(m[1].match(/__NEXT_DATA__/)){
+                script_data = m[2];
                 break;
             }
-            const pageDocument = await fetchDocument(`${url}/?p=${page}`);
-            toc.subtitles.push(...getSubtitles(pageDocument));
         }
-        // 取得したページの `subtitles` を統合
-        toc.subtitles = toc.subtitles.slice(0, maxPage);
+        const toc = {
+            title: "",
+            author: "",
+            toc_url: url,
+            story: "",
+            subtitles: []
+        };
+        if(script_data) {
+            try {
+                const json = JSON.parse(script_data);
+                const apollo_state = json["props"]["pageProps"]["__APOLLO_STATE__"];
+                const root_query = apollo_state["ROOT_QUERY"];
+                const top_work_id = root_query["work({\"id\":\"" + ncode + "\"})"]["__ref"];
+                const top_work = apollo_state[top_work_id];
+                toc.title = top_work["title"];
+                toc.author = apollo_state[top_work["author"]["__ref"]]["activityName"];
+                toc.story = `${top_work["catchphrase"]}\n${top_work["introduction"]}`;
+                const tableOfContents = top_work["tableOfContents"];
+                let chapter = "";
+                let index = 0;
+                for(let i=0; i<tableOfContents.length; ++i) {
+                    const subTableOfContents = apollo_state[tableOfContents[i]["__ref"]];
+                    if(subTableOfContents["chapter"]) {
+                        chapter = apollo_state[subTableOfContents["chapter"]["__ref"]]["title"];
+                    }
+                    const episodes = subTableOfContents["episodeUnions"];
+                    if (episodes) {
+                        for(let j=0; j<episodes.length; ++j){
+                            ++index;
+                            const episode = apollo_state[episodes[j]["__ref"]];
+                            toc.subtitles.push(
+                                {
+                                    subtitle: episode["title"],
+                                    href: `/works/${ncode}/episodes/${episode["id"]}`,
+                                    index: index,
+                                    subdate: episode["publishedAt"],
+                                    subupdate: "",
+                                    chapter: chapter,
+                                }
+                            );
+                            if (index >= maxPage){
+                                return toc;
+                            }
+                        }
+                    }
+                }
+            } catch(e) {
+                console.log(e)
+            }
+        }
         return toc;
     }
     const getUpdateData = async (ncode) => {
@@ -299,7 +325,7 @@
         }
         const updateData = [
             {
-                url: `${NovelListNarouTopUrl}/${ncode}/toc.json`,
+                url: `${NovelListKakuyomuTopUrl}/works/${ncode}/toc.json`,
                 content: JSON.stringify(toc),
                 id: foundItem ? foundItem.id : null
             }
@@ -307,7 +333,7 @@
         // 追加ページを取得
         for (let i = 0; i < addPage; i++) {
             const item = toc.subtitles[i + total];
-            const url = `${NovelListNarouTopUrl}${item.href}`;
+            const url = `${NovelListKakuyomuTopUrl}${item.href}`;
             const html = await fetch(url, { credentials: 'include' }).then(res => res.text());
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
@@ -316,12 +342,8 @@
                 ellist.push(`<h3 class="p-novel__subtitle-chapter">${escapeHtml(item.chapter)}</h3>`);
             }
             ellist.push(`<h3 class="p-novel__subtitle-episode">${escapeHtml(item.subtitle)}</h3>`);
-            for(const el of doc.getElementsByClassName("p-novel__body")) {
-                const removeItems = el.querySelectorAll(".p-novel__subtitle-chapter, .p-novel__subtitle-episode");
-                for(const removeItem of removeItems) {
-                    removeItem.parentNode.removeChild(removeItem);
-                }
-                ellist.push(el.outerHTML);
+            for(const el of doc.getElementsByClassName("js-episode-body")) {
+                ellist.push(el.innerHTML);
             }
             updateData.push({ url: url, content: ellist.join("") });
         }
@@ -354,7 +376,7 @@
     document.getElementById("NovelListAddFavorite").addEventListener("click", _ => {
         elModalAdd.style.display = "block";
         elError.textContent = "";
-        const match = document.location.href.match(/https:\/\/.*?\.syosetu\.com\/(?<ncode>n[0-9A-Za-z]+)/);
+        const match = document.location.href.match(/https:\/\/.*?\.kakuyomu\.jp\/works\/(?<ncode>n[0-9A-Za-z]+)/);
         if (match) {
             elInput.value = match.groups.ncode;
         }
@@ -373,7 +395,7 @@
     document.getElementById("NovelListSubmitNcode").addEventListener("click", async _ => {
         const ncode = elInput.value.trim();
         if (!ncode || ncode.length === 0) {
-            elError.textContent = `ncodeが入力されていません。`;
+            elError.textContent = `URLが入力されていません。`;
             return;
         } else if (NovelList.some(e => e.ncode === ncode)) {
             elError.textContent = `${ncode}は既に登録されています。`;
