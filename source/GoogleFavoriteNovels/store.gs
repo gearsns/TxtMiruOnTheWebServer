@@ -258,9 +258,17 @@ const tocYamlToHtml = text => {
       htmlArray.push(`<li class="chapter">${escapeHtml(item.chapter)}</li>`);
     }
     preChpter = item.chapter;
-    htmlArray.push(`<li><a href="${item.href}">${escapeHtml(item.subtitle||"")}</a><span>${escapeHtml(item.subupdate||"")}</span></li>`);
+    if (item.indent) {
+      htmlArray.push(`<li><dl style="padding-top:${item.indent}em"><dt><a href="${item.href}">${escapeHtml(item.subtitle||"")}</a><span class='long_update'>${escapeHtml(item.subupdate||item.subdate||"")}</span><dd><p>${(item.summary||"")}</p></dl></li>`);
+    } else {
+      htmlArray.push(`<li><a href="${item.href}">${escapeHtml(item.subtitle||"")}</a><span class='long_update'>${escapeHtml(item.subupdate||item.subdate||"")}</span></li>`);
+    }
   }
   htmlArray.push(`</ul>`);
+  if (json.subtitles.length > 0){
+    const item = json.subtitles[0]
+    htmlArray.push(`<a class='txtmiru_pager' id='TxtMiruNextPage' href='${item.href}'>次へ （${escapeHtml(item.subtitle.trim())}）</a>`);
+  }
   return htmlArray.join("");
 }
 

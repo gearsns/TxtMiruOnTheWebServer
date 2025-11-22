@@ -24,7 +24,7 @@ const doGet = e => {
   const [deepPathList, fileName] = getStoreFileLocation(url);
   let storeText = getStoreText(url, deepPathList, fileName);
   deepPathList.pop();
-  const tocText = getTextFromDeepFolder(deepPathList, "toc.yaml");
+  const tocText = fileName === "toc.yaml" ? null : getTextFromDeepFolder(deepPathList, "toc.yaml");
   if (storeText)
   {
     if (url.match(/\.js$/))

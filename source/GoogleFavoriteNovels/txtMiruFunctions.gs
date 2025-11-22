@@ -1,12 +1,17 @@
+// URLからお気に入りを取得
+// ※現在のページ番号が指定されていたら、状況に応じてお気に入りのカレントページを更新する
+// (クラサバ間のやり取りを減らすため、お気に入りと更新を同時に実施)
 const getFavoriteByUrl = parameter => {
   const sheet = getSheet("favorite");
   const headers = getHeaders(sheet);
   const columnIndex = getColumnIndexFromHeaders(headers, "url");
   if (columnIndex > 0)
   {
+    // URLから該当行を取得
     let rowIndex = findRow(sheet, parameter.url, columnIndex);
     if (rowIndex <= 0)
     {
+      // 完全一致がなければ、末尾の「/」ありなしを切り替えて再検索
       if (parameter.url.match(/\/$/))
       {
         rowIndex = findRow(sheet, parameter.url.replace(/\/$/, ""), columnIndex);
@@ -22,6 +27,7 @@ const getFavoriteByUrl = parameter => {
       const row = range.getValues()[0];
       const indexCurPage = headers.indexOf("curPage");
       const indexCurUr = headers.indexOf("curUrl");
+      // クライアントから現在のページ番号が指定されていたら、最後に読んだページ番号と比較して現在のページ番号が多きければお気に入りのカレントページを更新
       if (parameter.page_no && parameter.cur_url && Number(parameter.page_no) > Number(row[indexCurPage])){
         row[indexCurPage] = parameter.page_no;
         row[indexCurUr] = parameter.cur_url;
