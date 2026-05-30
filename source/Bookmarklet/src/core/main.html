@@ -1,0 +1,50 @@
+<div id="container" class="NovelListBox">
+    <div id="Main" class="NovelListInnerBox">
+        <div class="MainInnerBox">
+            <button id="Close">×</button>
+            <h1>Novel to GoogleDrive</h1>
+            <hr>
+            <div id="NovelListUrlArea">
+                to GoogleDrive APIのアドレス：<input id="NovelListUrl">
+                <button id="SaveUrl">設定</button>
+                <span id="FavoriteInfo"></span>
+                <hr>
+            </div>
+            <button id="AddNovel">Add</button><button id="RemoveNovel">Remove</button><button
+                id="ListRefresh">Refresh</button><button id="ListCheck">更新を確認</button><button
+                id="UploadNovel">Upload</button>
+            <br>
+            <p id="NovelError"></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="ListBulkSelect"><label for="ListBulkSelect">更新</label>
+                        <th>既読<br>ページ数
+                        <th>タイトル
+                        <th>著者
+                </thead>
+                <tbody id="NovelListData"></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="ModalAdd" class="NovelListBox">
+        <div class="NovelListInnerBox">
+            <p><span id="InputCodeName">ID</span>を入力してください:</p>
+            <p id="InputError"></p>
+            <input type="text" id="NovelListNcodeInput" />
+            <button id="SubmitNcode">登録</button><button id="CancelNcode">キャンセル</button>
+        </div>
+    </div>
+    <div id="ModalRemove" class="NovelListBox">
+        <div class="NovelListInnerBox">
+            <p>選択したお気に入りを削除しますか？</p>
+            <button id="SubmitRemove">はい</button><button id="CancelRemove">いいえ</button>
+        </div>
+    </div>
+    <div id="Loading" class="NovelListBox">
+        <div class="NovelListInnerBox">
+            <p id="LoadingText">処理中</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+</div>

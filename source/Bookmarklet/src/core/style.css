@@ -1,0 +1,219 @@
+* {
+  writing-mode: horizontal-tb;
+}
+
+table,
+input {
+  margin: 2px;
+  border: 1px solid gray;
+  padding: 2px;
+}
+
+h1 {
+  color: #777;
+  display: inline;
+  margin: 0;
+  font-size: 1.5em;
+}
+
+a,
+a:visited {
+  color: #03c;
+  text-decoration: none;
+}
+
+.NovelListBox {
+  z-index: 11000;
+  position: fixed;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #00000030;
+}
+
+.NovelListInnerBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#LoadingText {
+  white-space: pre-wrap;
+}
+
+button {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  line-height: 1rem;
+  margin: 1px;
+}
+
+#AddNovel {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+#RemoveNovel {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+#ListRefresh {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+#UploadNovel {
+  background-color: #dea55b;
+  border-color: #da9a46;
+}
+
+#Main {
+  width: 100%;
+  height: 100%;
+}
+
+.MainInnerBox {
+  position: relative;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  padding: 20px;
+  overflow: auto;
+}
+
+#Close {
+  z-index: 12000;
+  position: fixed;
+  top: 25px;
+  left: 25px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-color: white;
+  color: white;
+}
+
+#Close::before,
+#Close::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 15px;
+  background: #888;
+}
+
+#Close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#Close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+#ModalAdd,
+#ModalRemove,
+#Loading {
+  display: none;
+}
+
+#NovelError,
+#InputError {
+  color: red;
+}
+
+table {
+  border-color: #dad3c8;
+  color: #333;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #605555;
+  color: #ddd0cc;
+}
+
+tbody tr {
+  background-color: #f8f3e5;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #fffcef;
+}
+
+th {
+  white-space: nowrap;
+}
+
+th,
+td {
+  border: solid 1px;
+  border-color: #dad3c8;
+  padding: 10px;
+}
+
+td:first-child {
+  white-space: nowrap;
+  min-width: 6rem;
+}
+
+td:nth-child(2) {
+  text-align: center;
+}
+
+td:nth-child(3) {
+  min-width: 30rem;
+}
+
+td:nth-child(4) {
+  min-width: 15rem;
+}
+
+.NovelListUpdateInfo {
+  background-color: #1f883d;
+  color: white;
+  border-color: transparent;
+  border-radius: 0.3rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  display: none;
+}
+
+#Loading .NovelListInnerBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid #FFF;
+  border-left-color: #1082ce;
+  animation: spinner-rotation 1s linear infinite;
+}
+
+@keyframes spinner-rotation {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

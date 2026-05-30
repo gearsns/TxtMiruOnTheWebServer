@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "strict": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@core": [
+        "./src/core/"
+      ],
+      "@core/*": [
+        "./src/core/*"
+      ],
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "declarations.d.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
+}

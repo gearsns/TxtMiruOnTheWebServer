@@ -1,0 +1,23 @@
+{
+  "name": "narou",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:narou": "cross-env SITE_NAME=narou vite build",
+    "build:kakuyomu": "cross-env SITE_NAME=kakuyomu vite build",
+    "build": "npm run build:narou && npm run build:kakuyomu",
+    "preview": "vite preview",
+    "test": "vitest --project=node-unit"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "cross-env": "^10.1.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.12",
+    "vite-plugin-bookmarklet": "^0.4.0",
+    "vitest": "^4.1.7"
+  }
+}
